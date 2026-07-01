@@ -25,7 +25,4 @@ if __name__ == "__main__":
 
     ORIGIN_URL = args.origin # Global variable
 
-    print(f"Starting Proxy for: {ORIGIN_URL}")
-    print(f"Listening in port: {args.port}")
-
     start_server(ORIGIN_URL, args.port)
