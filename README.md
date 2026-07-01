@@ -1,76 +1,64 @@
-# Servidor Proxy de Cache
-
-Español | [English](README.md)
-
-Una solución robusta y modular en Python para implementar un **servidor proxy con mecanismo de almacenamiento en caché persistente**. Este proyecto intercepta las solicitudes HTTP dirigidas a un servidor de origen, almacena localmente las respuestas exitosas para optimizar los tiempos de carga y ofrece una interfaz de línea de comandos (CLI) para su administración.
-# Servidor Proxy de Cache
+# Caching Proxy Server
 
 [Español](README.es.md) | English
 
-Una solución robusta y modular en Python para implementar un **servidor proxy con mecanismo de almacenamiento en caché persistente**. Este proyecto intercepta las solicitudes HTTP dirigidas a un servidor de origen, almacena localmente las respuestas exitosas para optimizar los tiempos de carga y ofrece una interfaz de línea de comandos (CLI) para su administración.
+A robust and modular Python solution to implement a **Proxy Server with a Persistent Caching Mechanism**. This project intercepts HTTP requests directed to an origin server, stores successful responses locally to optimize load times, and exposes a command-line interface (CLI) for administration.
 
-Proyecto desarrollado siguiendo las especificaciones del desafío [roadmap.sh/projects/caching-server](https://roadmap.sh/projects/caching-server).
-
----
-
-## Características
-
-* **Proxy totalmente transparente:** Permite redirigir dinámicamente cualquier ruta, método HTTP y parámetros de consulta al servidor de origen de forma segura.
-
-* **Gestión eficiente de recursos estáticos:** Configuración robusta para capturar y servir sin problemas estilos CSS, JavaScript, imágenes y fuentes sin interferir con las rutas internas.
-
-* **Caché persistente basada en JSON:** Almacenamiento local que se mantiene incluso después de reiniciar el servidor. Utiliza el hash SHA-256 de las solicitudes para generar nombres de archivo únicos y la codificación **Base64** para almacenar de forma segura el contenido binario.
-
-* **Encabezados de diagnóstico de red:** Inserción automática del encabezado `X-Cache: HIT` (si el recurso se sirvió desde el almacenamiento local) o `X-Cache: MISS` (si se consultó al servidor de origen).
-
-* **Arquitectura modular:** Separación estricta de responsabilidades entre el punto de entrada/CLI (`main.py`) y la lógica del servidor web (`server.py`).
+Project developed following the specifications of the [roadmap.sh/projects/caching-server](https://roadmap.sh/projects/caching-server) challenge.
 
 ---
 
-## Requisitos previos
+## Features
 
-* Python 3.8 o superior
-* Entorno virtual (venv) configurado e instalado
+* **Full Transparent Proxy:** Capability to dynamically redirect any route, HTTP method, and query parameters to the origin server securely.
+* **Efficient Static Resource Handling:** Robust configuration to capture and seamlessly serve CSS styles, JavaScript, images, and fonts without interfering with internal routes.
+* **Persistent JSON-Based Cache:** Local storage that survives server restarts. Uses SHA-256 hashing of requests to generate unique filenames and **Base64** encoding to safely store binary content.
+* **Network Diagnostic Headers:** Automatic insertion of the `X-Cache: HIT` header (if the resource was served from local storage) or `X-Cache: MISS` (if the origin server was queried).
+* **Modular Architecture:** Strict separation of concerns between the entry point/CLI (`main.py`) and the web server logic (`server.py`).
 
 ---
 
-## Instalación y configuración
+## Prerequisites
 
-1. **Clonar el repositorio:**
+* Python 3.8 or higher
+* Configured and installed virtual environment (`venv`)
+
+---
+
+## Installation and Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/Aki-new/proxy-cache.git]
+   cd proxy-cache
+2. **Activate the virtual environment and install dependencies:**
     ```bash
-    git clone [https://github.com/Aki-new/proxy-cache.git]
-    cd proxy-cache
-    
-2. **Activar el entorno virtual e instalar las dependencias:**
+        # On Windows:
+        .venv\Scripts\activate
+        
+        # On macOS/Linux:
+        source .venv/bin/activate
+        
+        # Install required dependencies (Flask and Requests)
+        pip install -r requirements.txt
 
-    ```bash
-    # En Windows:
-    .venv\Scripts\activate
-    # En macOS/Linux:
-    source .venv/bin/activate
-    # Instalar las dependencias necesarias (Flask y Requests)
-    pip install -r requirements.txt
----
-    
-## Instrucciones de uso
-El proyecto se gestiona completamente mediante la interfaz de línea de comandos (CLI) desde el archivo main.py.
+## Usage Instructions
+The project is managed entirely through the command-line interface (CLI) from the main.py file.
 
-1. **Iniciar el servidor proxy:**
-
-    Para iniciar el proxy, se debe especificar la URL del servidor de origen. Opcionalmente, se puede proporcionar un puerto (el predeterminado es 5000):
-
+1. **Start the Proxy Server:**
+    To start the proxy, the origin server URL must be specified. Optionally, a port can be provided (defaults to 5000):
     ```bash
     python main.py --port 3000 --origin https://www.python.org
 
-2. **Verificar la funcionalidad de la caché:**
-    Una vez que el servidor esté en funcionamiento, abra un navegador o utilice herramientas como curl o Postman para interactuar con él:
+2. **Verify Cache Functionality:**
+Once the server is running, open a browser or use tools like curl or Postman to interact with it:
 
-    * Solicitud inicial (MISS): Al acceder a http://localhost:3000/, se descargará el contenido del servidor de origen, se creará el archivo JSON local en la carpeta .cache/ y se responderá incluyendo el encabezado X-Cache: MISS.
-    
-    * Solicitudes subsiguientes (HIT): Recargar la página o solicitar el mismo recurso resultará en una respuesta instantánea utilizando el archivo local, incluyendo el encabezado X-Cache: HIT.
-    
-3. **Borrar caché persistente:**
-Para vaciar completamente el almacenamiento local y eliminar la carpeta .cache/, ejecute el comando con la opción `--clear-cache`:
+    * Initial Request (MISS): Accessing http://localhost:3000/ will download the content from the origin, create the local JSON file in the .cache/ folder, and respond by including the X-Cache: MISS header.
+
+    * Subsequent Requests (HIT): Reloading the page or requesting the same resource will result in an instant response using the local file, including the X-Cache: HIT header.
+
+3. **Clear Persistent Cache:**
+To completely empty the local storage and delete the .cache/ folder, execute the command with the `--clear-cache flag`:
 
 ``` bash
 python main.py --clear-cache

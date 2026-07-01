@@ -31,28 +31,20 @@ Proyecto desarrollado siguiendo las especificaciones del desafío [roadmap.sh/pr
 
 ## Instalación y configuración
 
-    1. **Clonar el repositorio:**
-
-        ```bash
-
-        git clone [https://github.com/Aki-new/proxy-cache.git]
-
-        cd proxy-cache
-    2. **Activar el entorno virtual e instalar las dependencias:**
+1. **Clonar el repositorio:**
+    ```bash
+    git clone [https://github.com/Aki-new/proxy-cache.git]
+    cd proxy-cache
     
-        ```bash
+2. **Activar el entorno virtual e instalar las dependencias:**
 
-        # En Windows:
-
-        .venv\Scripts\activate
-
-        # En macOS/Linux:
-
-        source .venv/bin/activate
-
-        # Instalar las dependencias necesarias (Flask y Requests)
-
-        pip install -r requirements.txt
+    ```bash
+    # En Windows:
+    .venv\Scripts\activate
+    # En macOS/Linux:
+    source .venv/bin/activate
+    # Instalar las dependencias necesarias (Flask y Requests)
+    pip install -r requirements.txt
 ---
     
 ## Instrucciones de uso
@@ -60,19 +52,18 @@ El proyecto se gestiona completamente mediante la interfaz de línea de comandos
 
 1. **Iniciar el servidor proxy:**
 
-Para iniciar el proxy, se debe especificar la URL del servidor de origen. Opcionalmente, se puede proporcionar un puerto (el predeterminado es 5000):
+    Para iniciar el proxy, se debe especificar la URL del servidor de origen. Opcionalmente, se puede proporcionar un puerto (el predeterminado es 5000):
 
-```bash
-
-python main.py --port 3000 --origin https://www.python.org
+    ```bash
+    python main.py --port 3000 --origin https://www.python.org
 
 2. **Verificar la funcionalidad de la caché:**
-Una vez que el servidor esté en funcionamiento, abra un navegador o utilice herramientas como curl o Postman para interactuar con él:
+    Una vez que el servidor esté en funcionamiento, abra un navegador o utilice herramientas como curl o Postman para interactuar con él:
 
-* Solicitud inicial (MISS): Al acceder a http://localhost:3000/, se descargará el contenido del servidor de origen, se creará el archivo JSON local en la carpeta .cache/ y se responderá incluyendo el encabezado X-Cache: MISS.
-
-* Solicitudes subsiguientes (HIT): Recargar la página o solicitar el mismo recurso resultará en una respuesta instantánea utilizando el archivo local, incluyendo el encabezado X-Cache: HIT.
-
+    * Solicitud inicial (MISS): Al acceder a http://localhost:3000/, se descargará el contenido del servidor de origen, se creará el archivo JSON local en la carpeta .cache/ y se responderá incluyendo el encabezado X-Cache: MISS.
+    
+    * Solicitudes subsiguientes (HIT): Recargar la página o solicitar el mismo recurso resultará en una respuesta instantánea utilizando el archivo local, incluyendo el encabezado X-Cache: HIT.
+    
 3. **Borrar caché persistente:**
 Para vaciar completamente el almacenamiento local y eliminar la carpeta .cache/, ejecute el comando con la opción `--clear-cache`:
 
