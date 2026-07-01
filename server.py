@@ -1,5 +1,6 @@
 from flask import Flask, Response, request
 import requests
+from cache import get_cache_filename, load_from_cache, save_to_cache
 
 app = Flask(__name__, static_folder=None)
 ORIGIN_URL = None
@@ -19,6 +20,18 @@ def proxy_global(path):
     target_url = f"{base_origin}/{target_path}" if target_path else base_origin
 
     query_params = request.args.to_dict()
+    filepath = get_cache_filename(target_url, query_params)
+
+    cached_response = load_from_cache(filepath)
+
+    if cached_response:
+        # ¡HIT!
+        return Response(
+            cached_response["content"],
+            status=cached_response["status"],
+            content_type=cached_response["content_type"],
+            headers={"X-Cache": "HIT"}
+        )
 
     try:
         headers = {}
@@ -36,11 +49,14 @@ def proxy_global(path):
         )
 
         content_type = origin_response.headers.get("Content-Type") or "text/html; charset=utf-8"
+
+        save_to_cache(filepath, origin_response.content, origin_response.status_code, content_type)
         
         return Response(
             origin_response.content,
             status=origin_response.status_code,
             content_type=content_type,
+            headers={"X-Cache": "MISS"}
         )
         
     except requests.exceptions.RequestException as e:

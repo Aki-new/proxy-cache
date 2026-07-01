@@ -15,7 +15,6 @@ def get_cache_filename(target_url, query_params):
     return os.path.join(CACHE_DIR, f"{url_hash}.json")
 
 def save_to_cache(filepath, content_bytes, status_code, content_type):
-    """Guarda la respuesta convirtiendo los bytes a texto en Base64."""
     os.makedirs(CACHE_DIR, exist_ok=True)
     
     encoded_content = base64.b64encode(content_bytes).decode('utf-8')
