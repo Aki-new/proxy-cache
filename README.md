@@ -1,5 +1,10 @@
 # Servidor Proxy de Cache
 
+Español | [English](README.md)
+
+Una solución robusta y modular en Python para implementar un **servidor proxy con mecanismo de almacenamiento en caché persistente**. Este proyecto intercepta las solicitudes HTTP dirigidas a un servidor de origen, almacena localmente las respuestas exitosas para optimizar los tiempos de carga y ofrece una interfaz de línea de comandos (CLI) para su administración.
+# Servidor Proxy de Cache
+
 [Español](README.es.md) | English
 
 Una solución robusta y modular en Python para implementar un **servidor proxy con mecanismo de almacenamiento en caché persistente**. Este proyecto intercepta las solicitudes HTTP dirigidas a un servidor de origen, almacena localmente las respuestas exitosas para optimizar los tiempos de carga y ofrece una interfaz de línea de comandos (CLI) para su administración.
