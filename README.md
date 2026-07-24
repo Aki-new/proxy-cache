@@ -1,64 +1,137 @@
-# Caching Proxy Server
+# ⚡ HTTP Proxy Caching Server
 
 [Español](README.es.md) | English
 
-A robust and modular Python solution to implement a **Proxy Server with a Persistent Caching Mechanism**. This project intercepts HTTP requests directed to an origin server, stores successful responses locally to optimize load times, and exposes a command-line interface (CLI) for administration.
+A caching proxy server developed in **Python with Flask and Requests**. This service acts as an intermediary between the client and an origin server, intercepting HTTP requests to cache responses on the local file system and reduce latency on subsequent requests.
 
-Project developed following the specifications of the [roadmap.sh/projects/caching-server](https://roadmap.sh/projects/caching-server) challenge.
-
----
-
-## Features
-
-* **Full Transparent Proxy:** Capability to dynamically redirect any route, HTTP method, and query parameters to the origin server securely.
-* **Efficient Static Resource Handling:** Robust configuration to capture and seamlessly serve CSS styles, JavaScript, images, and fonts without interfering with internal routes.
-* **Persistent JSON-Based Cache:** Local storage that survives server restarts. Uses SHA-256 hashing of requests to generate unique filenames and **Base64** encoding to safely store binary content.
-* **Network Diagnostic Headers:** Automatic insertion of the `X-Cache: HIT` header (if the resource was served from local storage) or `X-Cache: MISS` (if the origin server was queried).
-* **Modular Architecture:** Strict separation of concerns between the entry point/CLI (`main.py`) and the web server logic (`server.py`).
+Project developed following the specifications of the challenge [roadmap.sh/projects/caching-server](https://roadmap.sh/projects/caching-server).
 
 ---
 
-## Prerequisites
+## ✨ Main Features
 
-* Python 3.8 or higher
-* Configured and installed virtual environment (`venv`)
+* **🌐 Dynamic Routing:** Captures and redirects any path (`/<path:path>`) and query parameters to the configured origin server.
+
+* **📦 Binary Persistent Cache:** Converts responses (including images, CSS, and binaries) to **Base64** and stores them locally in JSON format within the `.cache/` directory.
+
+* **🔒 Deterministic Hashes (SHA-256):** Generates unique filenames based on the target URL and pre-sorted query parameters, preventing duplicates.
+
+* **🎯 Diagnostic Headers `X-Cache`:** Automatically adds the HTTP header `X-Cache: HIT` when the response is served from local storage, and `X-Cache: MISS` when querying the origin.
+
+* **🧹 Full CLI Interface:** Allows you to start the server by configuring the target port and origin, or perform maintenance with the `--clear-cache` flag.
 
 ---
 
-## Installation and Setup
+## 📂 Project Structure
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/Aki-new/proxy-cache.git]
-   cd proxy-cache
-2. **Activate the virtual environment and install dependencies:**
-    ```bash
-        # On Windows:
-        .venv\Scripts\activate
-        
-        # On macOS/Linux:
-        source .venv/bin/activate
-        
-        # Install required dependencies (Flask and Requests)
-        pip install -r requirements.txt
+```text
+├── main.py # CLI entry point and command management
+├── server.py # Flask server, route definition, and proxy logic
+├── cache.py # Base64 serialization, SHA-256 hashing, and disk read/write
+└── README.es.md # Project documentation
+```
 
-## Usage Instructions
-The project is managed entirely through the command-line interface (CLI) from the main.py file.
+---
 
-1. **Start the Proxy Server:**
-    To start the proxy, the origin server URL must be specified. Optionally, a port can be provided (defaults to 5000):
-    ```bash
-    python main.py --port 3000 --origin https://www.python.org
+## 🛠️ Technologies Used
+* **Language:** Python 3.8+
+* **Web Framework:** Flask
+* **HTTP Client:** Requests
+* **Standard Modules:** `hashlib`, `base64`, `json`, `argparse`, `shutil`
 
-2. **Verify Cache Functionality:**
-Once the server is running, open a browser or use tools like curl or Postman to interact with it:
+## 🚀 Installation and Configuration
+1. **Clone the Repository and Install Dependencies**
+```bash
+git clone https://github.com/Aki-new/proxy-cache.git
+cd proxy-cache
 
-    * Initial Request (MISS): Accessing http://localhost:3000/ will download the content from the origin, create the local JSON file in the .cache/ folder, and respond by including the X-Cache: MISS header.
+# Create and activate virtual environment
+python -m venv .venv
 
-    * Subsequent Requests (HIT): Reloading the page or requesting the same resource will result in an instant response using the local file, including the X-Cache: HIT header.
+# On Windows:
+.venv\Scripts\activate
 
-3. **Clear Persistent Cache:**
-To completely empty the local storage and delete the .cache/ folder, execute the command with the `--clear-cache flag`:
+# On macOS/Linux:
+source .venv/bin/activate
 
-``` bash
+# Install dependencies
+pip install flask requests
+```
+
+## 💡 How to Use
+1. **Start the Proxy Server**
+Start the proxy by specifying the URL of the origin server and, optionally, a port (default is `5000`):
+```bash
+
+python main.py --port 3000 --origin https://www.python.org
+```
+
+2. **Test the Cache Functionality**
+Make requests to your local server through your browser or using `curl`:
+**First Request (MISS):**
+```bash
+curl -i http://localhost:3000/
+```
+**Response:** Returns the content of the source and includes the header `X-Cache: MISS`.
+
+**Second Request (HIT):**
+```bash
+curl -i http://localhost:3000/
+```
+**Response:** Instantly returns the response saved to disk and includes the header `X-Cache: HIT`.
+
+
+3. Clear the Persistent Cache
+To delete the `.cache/` folder and all its stored contents:
+```bash
 python main.py --clear-cache
+```
+
+## 📊 Sequence Diagram
+```mermaid
+sequenceDiagram
+autonumber
+actor Client as Client (Browser / cURL)
+participant Proxy as Proxy Server (Flask)
+participant Cache as Cache Layer (SHA-256 / Base64)
+participant Origin as Origin Server (e.g., python.org)
+
+Client->>Proxy: GET /path?param=1
+
+Proxy->>Cache: Check if a SHA-256 hash exists in .cache/
+
+alt Case: Cache HIT
+
+Cache->>Proxy: Returns JSON (Decodes Base64)
+
+Proxy->>Client: 200 OK (X-Cache Header: HIT)
+
+else Case: Cache MISS
+Cache-->>Proxy: File not found
+
+Proxy->>Origin: GET https://www.python.org/path?param=1
+
+Origin-->>Proxy: 200 OK (Original content)
+
+Proxy->>Cache: Base64 encoding and saving JSON
+
+Proxy-->>Client: 200 OK (X-Cache Header: MISS)
+
+end
+```
+
+---
+
+## ⚠️ Known Limitations and Roadmap
+
+This project was developed as a functional **Proof of Concept (PoC)** to validate the architecture of a caching proxy server. Currently, it presents the following design limitations to consider for production environments:
+
+* **Memory Management:** The content of responses is fully loaded into memory before being serialized to Base64, which limits support for large files (videos/large files).
+
+* *Planned Improvement:* Implement stream handling (block read/write).
+
+* **Lack of TTL (Time To Live):** Resources in `.cache/` do not automatically expire and do not respect the standard `Cache-Control` or `ETag` headers of the source server.
+
+* *Planned Improvement:* Add an automated purge system based on time and LRU (Least Recently Used) policies.
+
+* **Disk Serialization:** The storage
